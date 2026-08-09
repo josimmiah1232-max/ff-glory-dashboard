@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FF Glory Dashboard</title>
+<style>
+:root{
+  --bg:#05070d; --card:#0b0e15; --card2:#0f131c; --text:#f5f7fb;
+  --muted:#7f8999; --line:#1b2330; --blue:#168cff; --gold:#ffb21a;
+  --green:#35e78b; --red:#ff4d5e;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:
+  radial-gradient(circle at 50% -10%,#10234b 0,transparent 38%),
+  radial-gradient(circle at 100% 80%,#071b2c 0,transparent 30%),var(--bg);
+  color:var(--text);font-family:Inter,system-ui,Arial,sans-serif;
+}
+.app{max-width:760px;margin:auto;padding:18px 16px 100px}
+.topbar{
+  height:78px;border:1px solid #123d72;border-radius:22px;
+  background:linear-gradient(90deg,#081322,#0d1622);display:flex;
+  align-items:center;justify-content:space-between;padding:12px 18px;
+  box-shadow:0 0 28px #087fff22;
+}
+.brand{display:flex;align-items:center;gap:12px;font-size:21px;font-weight:800}
+.logo{width:48px;height:48px;border-radius:15px;background:#07101d;border:1px solid #24496d;
+display:grid;place-items:center;font-weight:900;color:#5fb5ff;box-shadow:0 0 20px #168cff44}
+.live{color:var(--green);font-size:12px}.dot{display:inline-block;width:8px;height:8px;background:var(--green);border-radius:50%;margin-right:5px}
+.actions{display:flex;gap:18px;font-size:25px;color:#cbd4df}
+.credits{color:#788395;font-size:12px;margin:0 0 8px 10px}.credits b{color:#52a8ff}
+h2{font-size:20px;margin:34px 0 14px}
+.instance,.guild{
+  background:linear-gradient(145deg,#0c1017,#090b10);border:1px solid #242b35;
+  border-radius:24px;margin:14px 0;overflow:hidden;position:relative;
+}
+.guild{border-color:#725313;box-shadow:0 0 20px #ffb21a0c}
+.ribbon{position:absolute;right:0;top:0;background:linear-gradient(90deg,#7b4b00,#ffb21a);
+padding:8px 14px;border-radius:0 20px 0 16px;color:#080808;font-size:11px;font-weight:900}
+.guild-head{display:flex;align-items:center;gap:13px;padding:20px 18px 12px}
+.guild-icon{width:58px;height:58px;border-radius:16px;background:#15191e;border:2px solid #b88420;
+display:grid;place-items:center;font-size:27px}
+.guild-title{font-size:20px;font-weight:800}.sub{font-size:12px;color:#7d8794;margin-top:4px}
+.sub b{color:#d5dbe3}.green{color:var(--green)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid #171d26;border-bottom:1px solid #171d26}
+.stat{padding:16px 8px;text-align:center;border-right:1px solid #171d26}
+.stat:last-child{border-right:0}.stat small{display:block;color:#707a89;font-size:11px;margin-bottom:8px}
+.stat strong{font-size:18px;color:#f1f4f8}.leader{color:#ffb21a!important}.dash{color:#36db93!important}
+.instance-body{padding:16px 18px 18px}
+.instance-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.instance-brand{display:flex;align-items:center;gap:10px}.mini-logo{width:43px;height:43px;border-radius:12px;background:#09131e;border:1px solid #24496d;display:grid;place-items:center;color:#5bb5ff;font-weight:900}
+.status{padding:6px 11px;border-radius:12px;background:#123624;color:#48e896;font-size:11px;font-weight:800}
+.failed{background:#17151a;color:#7d8794}.meta{color:#8a94a3;font-size:12px;margin:10px 0 12px}.meta b{color:#5eb4ff}
+.detail{display:flex;justify-content:space-between;gap:12px;color:#7f8998;font-size:12px;margin:10px 0}
+.glory{color:#7ce6aa}.bar{height:6px;background:#17202a;border-radius:20px;overflow:hidden;margin:7px 0 17px}.fill{height:100%;width:0;background:linear-gradient(90deg,#168cff,#35e78b);transition:.3s}
+button{width:100%;border:0;border-radius:18px;padding:13px;font-weight:900;cursor:pointer}
+.restart{background:linear-gradient(90deg,#ffad18,#ffd21e);color:#15110a;font-size:14px}
+.delete{margin-top:10px;background:transparent;border:1px solid #18355e;color:#64aaff}
+.failed-delete{border-color:#5e1e29;color:#ff5968}
+.controls{
+  background:#0b1018;border:1px solid #1b2a3b;border-radius:20px;padding:16px;margin-top:22px;
+}
+.controls h3{margin:0 0 12px}.controls input{
+  width:100%;background:#080c12;border:1px solid #273444;color:white;border-radius:12px;padding:11px;margin:5px 0 10px;outline:none
+}
+.controls button{background:#168cff;color:white}
+.nav{
+ position:fixed;bottom:12px;left:50%;transform:translateX(-50%);width:min(680px,calc(100% - 28px));
+ display:grid;grid-template-columns:repeat(5,1fr);background:#09101aee;border:1px solid #1d334e;
+ border-radius:25px;padding:10px;backdrop-filter:blur(12px);box-shadow:0 0 35px #168cff22
+}
+.nav div{text-align:center;color:#718093;font-size:11px;padding:8px}.nav .active{color:#49a8ff}
+@media(max-width:520px){.app{padding-left:10px;padding-right:10px}.guild-title{font-size:18px}.stat strong{font-size:16px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="credits">Available: <b>0 credits</b></div>
+
+  <header class="topbar">
+    <div class="brand"><div class="logo">FF</div><span>FF <i>GLORY</i> <span class="live"><span class="dot"></span>LIVE</span></span></div>
+    <div class="actions"><span>⚙</span><span>⇥</span></div>
+  </header>
+
+  <h2>〽 Bot Instances</h2>
+
+  <section class="guild" id="guildCard">
+    <div class="ribbon">★ SUPER SQUAD!</div>
+    <div class="guild-head">
+      <div class="guild-icon">🦁</div>
+      <div>
+        <div class="guild-title" id="guildName">GUILD_BOT_9</div>
+        <div class="sub">ID: <b id="guildIdText">3053551999</b>　| 🇮🇳 IND　| <b>4 BOTS</b></div>
+        <div class="sub" style="color:#b0b7c2;font-style:italic;margin-top:7px">"Welcome!"</div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><small>♧ MEMBERS</small><strong id="members">2/55</strong></div>
+      <div class="stat"><small>♕ LEADER</small><strong class="leader" id="leader">2104711211</strong></div>
+      <div class="stat"><small>☆ TOTAL GLORY</small><strong class="dash" id="glory">—</strong></div>
+    </div>
+  </section>
+
+  <section class="instance">
+    <div class="instance-body">
+      <div class="instance-row">
+        <div class="instance-brand"><div class="mini-logo">FF</div><div><b>FF GLORY</b><div class="sub">♧ GUILD_BOT_9 Lv1　•　🌐 🇮🇳 IND</div></div></div>
+        <span class="status">● RUNNING</span>
+      </div>
+      <div class="detail"><span>⚡ <b>4 bots</b> · Basic · 1 Prime Squad</span><span>☆ <span class="glory">Glory —</span></span></div>
+      <div class="detail"><span>⏱ Uptime <b style="color:#7da5c9">0h 2m</b></span><span>8H GOAL <b id="goalPct">0%</b></span></div>
+      <div class="bar"><div class="fill" id="fill"></div></div>
+      <button class="restart" id="restartBtn">⟳ RESTART</button>
+      <button class="delete" onclick="refund()">↩ Refund</button>
+    </div>
+  </section>
+
+  <section class="guild">
+    <div class="ribbon">★ SUPER SQUAD!</div>
+    <div class="guild-head">
+      <div class="guild-icon">🦁</div>
+      <div>
+        <div class="guild-title">Guild #3053551999</div>
+        <div class="sub">ID: 3053551999　| 🇮🇳 IND　| <b>4 BOTS</b></div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><small>♧ MEMBERS</small><strong>—/55</strong></div>
+      <div class="stat"><small>♕ LEADER</small><strong>—</strong></div>
+      <div class="stat"><small>☆ TOTAL GLORY</small><strong class="dash">—</strong></div>
+    </div>
+  </section>
+
+  <section class="instance">
+    <div class="instance-body">
+      <div class="instance-row">
+        <div class="instance-brand"><div class="mini-logo">FF</div><div><b>FF GLORY</b><div class="sub">♧ Clan 3053551999　•　🌐 🇮🇳 IND</div></div></div>
+        <span class="status failed">● FAILED</span>
+      </div>
+      <div class="detail"><span>⚡ <b>4 bots</b> · Basic · 1 Prime Squad</span><span>☆ <span class="glory">Glory —</span></span></div>
+      <div class="detail"><span>⏱ Uptime <b style="color:#7da5c9">0h 43m</b></span></div>
+      <div class="sub">Created: 09/08/2026</div>
+      <button class="delete failed-delete" onclick="deleteBot(this)">♜ Delete</button>
+    </div>
+  </section>
+
+  <div class="controls">
+    <h3>Guild Demo Controls</h3>
+    <input id="guildInput" placeholder="Enter Guild ID" value="3053551999">
+    <input id="memberInput" type="number" min="0" max="55" placeholder="Members" value="2">
+    <input id="leaderInput" placeholder="Leader UID" value="2104711211">
+    <button onclick="updateGuild()">UPDATE DASHBOARD</button>
+  </div>
+</div>
+
+<nav class="nav">
+  <div>▣<br>History</div><div>♙<br>Coupons</div><div class="active">◉<br>Home</div><div>♧<br>Likes</div><div>▢<br>Contact</div>
+</nav>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function updateGuild(){
+  const id = $('guildInput').value.trim() || '3053551999';
+  const members = Math.max(0, Math.min(55, Number($('memberInput').value) || 0));
+  const leader = $('leaderInput').value.trim() || '—';
+  $('guildIdText').textContent = id;
+  $('members').textContent = members + '/55';
+  $('leader').textContent = leader;
+  $('guildName').textContent = 'GUILD_BOT_9';
+}
+
+$('restartBtn').addEventListener('click', () => {
+  const btn = $('restartBtn');
+  btn.textContent = '⟳ RESTARTING...';
+  let progress = 0;
+  const timer = setInterval(() => {
+    progress += 10;
+    $('fill').style.width = progress + '%';
+    $('goalPct').textContent = progress + '%';
+    if(progress >= 100){
+      clearInterval(timer);
+      btn.textContent = '✓ RUNNING';
+      setTimeout(() => {
+        btn.textContent = '⟳ RESTART';
+        $('fill').style.width = '0%';
+        $('goalPct').textContent = '0%';
+      }, 900);
+    }
+  }, 120);
+});
+
+function refund(){
+  alert('Demo: 1 bot credit refunded.');
+}
+function deleteBot(button){
+  const card = button.closest('.instance');
+  if(confirm('Delete this demo bot?')) card.remove();
+}
+</script>
+</body>
+</html>
